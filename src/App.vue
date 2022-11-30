@@ -7,32 +7,38 @@
     <section class="new-task-form">
       <TaskForm />
     </section>
+    <div 
+      v-if="loading"
+      class="loading"
+    >
+      Loading...
+    </div>
     <nav class="filter">
       <button 
         @click="filter = 'all'"
       >
-        ({{taskStore.totalCount}}) All tasks
+        ({{totalCount}}) All tasks
       </button>
       <button 
         @click="filter = 'favs'"
       >
-        ({{taskStore.favCount}}) Fav tasks
+        ({{favCount}}) Fav tasks
       </button>
     </nav>
     <section>
       <section class="task-list" v-if="filter === 'all'">
-        <p>You have {{taskStore.totalCount}} tasks left to do</p>
+        <p>You have {{totalCount}} tasks left to do</p>
         <article 
-          v-for="(task,index) in taskStore.tasks"
+          v-for="(task,index) in tasks"
           :key="index"
         >
         <TaskDetails :task="task" />
       </article>
       </section>
       <section class="task-list" v-if="filter === 'favs'">
-        <p>You have {{taskStore.favCount}} tasks left to do</p>
+        <p>You have {{favCount}} tasks left to do</p>
         <article
-          v-for="(task,index) in taskStore.favs"
+          v-for="(task,index) in favs"
           :key="index"
         >
           <TaskDetails :task="task" />
@@ -43,7 +49,8 @@
 </template>
 
 <script> 
-  import { ref } from 'vue'
+  import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
   import TaskDetails from './components/TaskDetails.vue'
   import TaskForm from './components/TaskForm.vue'
 
@@ -59,12 +66,24 @@
 
       // Asignacion de la store importada a una variable dentro de la funcion setup() del componente
       const taskStore = useTaskStore()
-  
+
+      /*
+        El hook storeToRefs() recibe como parametro el nombre de la variable al cual se ha asignado la store de Pinia dentro del componente
+        El hook storeToRefs() permite desestructurar las propiedades y getters de la store en variables individuales
+        Las actions de la store no pueden ser desestructuradas mediante el hook storeToRefs()
+      */ 
+      const { tasks, loading, favs, favCount, totalCount } = storeToRefs(taskStore)
+
+      taskStore.getTasks()
 
       const filter = ref('all')
 
       return {
-        taskStore,
+        tasks,
+        loading, 
+        favs, 
+        favCount,
+        totalCount,
         filter
       }
     }

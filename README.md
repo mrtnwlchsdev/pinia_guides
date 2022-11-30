@@ -35,3 +35,14 @@ Las stores de Pinia se ubican en la siguiente ruta
             |- store2.js
             ...
 
+## Valores por defecto de la store
+
+A traves de la siguiente sintaxis es posible restablecer los valores por defecto de la store
+
+    variableStore.$reset
+
+variableStore sera el nombre de la variable a la cual es asignada la importacion de la store dentro de un componente
+
+    import { useStoreName } from './storeDir/storeFile'
+
+    const variableStore = useStoreName()

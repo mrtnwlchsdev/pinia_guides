@@ -4,6 +4,7 @@
         <article class="icons">
             <i 
                 class="material-icons"
+                tooltip="'Eliminar'"
                 @click="taskStore.deleteTask(task.id)"
             >
                 delete
@@ -21,6 +22,7 @@
 
 <script>
     import { useTaskStore } from '../stores/store'
+    import tooltip from 'v-tooltip'
 
     export default {
         props: [

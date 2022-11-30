@@ -106,3 +106,13 @@ input {
   color: #555;
   font-size: 1em;
 }
+/* Loading */
+.loading {
+  max-width: 640px;
+  border: 1px solid #ffd859;
+  background-color: #ffe9a0;
+  color: #3a3a3a;
+  padding: 5px 0;
+  text-align: center;
+  margin: 30px auto;
+}

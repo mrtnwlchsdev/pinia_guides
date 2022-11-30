@@ -14,10 +14,8 @@ export const useTaskStore = defineStore('taskStore', {
   // El metodo state retorna un objeto, el cual se encargara de contener los estados de la store como propiedades
   // En el siguiente ejemplo el objeto que retorna el metodo state contiene 2 propiedades, tasks y name 
   state: () => ({
-    tasks: [
-      {id: 1, title: 'Buy some milk', isFav: false},
-      {id: 2, title: 'Play gloomhaven', isFav: true}
-    ],
+    tasks: [],
+    loading: false
   }),
   /*
     Dentro de la store es posible definir una propiedad llamada getters, cuyo valor sera un objeto
@@ -49,15 +47,72 @@ export const useTaskStore = defineStore('taskStore', {
     En Pinia para actualizar el estado de la la aplicacion se utilizan funciones llamadas actions
   */
   actions: {
-    addTask(task) {
-      this.tasks.push(task)
+    async getTasks() {
+      try {
+        this.loading = true
+
+        const response = await fetch('http://localhost:3000/tasks')
+        const data = await response.json()
+
+        this.tasks = data
+        this.loading = false
+      } catch (error) {
+        console.log(error)
+      }
     },
-    deleteTask(id) {
-      this.tasks = this.tasks.filter(task => task.id !== id)
+    async addTask(task) {
+      try {
+        this.tasks.push(task)
+      
+        const response = await fetch('http://localhost:3000/tasks', {
+          method: 'POST',
+          body: JSON.stringify(task),
+          headers: {
+              'Content-Type': 'application/json'
+          }
+        })
+
+        if (response.error) {
+          throw new Error('The post can\'t be reached')
+        }
+      } catch (error) {
+        console.log(error)
+      }
     },
-    toggleFav(id) {
-      const task = this.tasks.find(task => task.id === id)
-      task.isFav = !task.isFav
+    async toggleFav(id) {
+      try {
+        const task = this.tasks.find(task => task.id === id)
+        task.isFav = !task.isFav
+
+        const response = await fetch(`http://localhost:3000/tasks/${id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({isFav: task.isFav}),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+
+        if (response.error) {
+          throw new Error('The patch request can\'t be reached')
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async deleteTask(id) {
+      try {
+        const response = await fetch(`http://localhost:3000/tasks/${id}`, {
+          method: 'DELETE'
+        })
+        
+        this.tasks = this.tasks.filter(task => task.id !== id)
+
+        if (response.error) {
+          throw new Error('The delete request can\'t be reached')
+        }
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 })  
